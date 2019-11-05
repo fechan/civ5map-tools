@@ -1,7 +1,9 @@
 meta:
   id: civ5map
+  application: Sid Meier's Civilization V
   file-extension: civ5map
   encoding: UTF-8
+  license: CC0-1.0
   endian: le
 doc: |
   Many of Civilization 5's maps are in civ5map format, and encodes terrain and
