@@ -143,7 +143,8 @@ types:
           - id: feature1_type_id
             type: u1
           - id: river
-            doc: 0 (none), non-0 may indicate a direction as well
+            enum: river
+            doc: non-0 values may indicate a direction as well
             type: u1
           - id: elevation
             type: u1
@@ -166,3 +167,5 @@ types:
             2: asia
             3: africa
             4: europe
+          river:
+            0: none
