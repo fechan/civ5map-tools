@@ -2,12 +2,29 @@
 
 from pkg_resources import parse_version
 from kaitaistruct import __version__ as ks_version, KaitaiStruct, KaitaiStream, BytesIO
+from enum import Enum
 
 
 if parse_version(ks_version) < parse_version('0.7'):
     raise Exception("Incompatible Kaitai Struct Python API: 0.7 or later is required, but you have %s" % (ks_version))
 
 class Civ5map(KaitaiStruct):
+    """Many of Civilization 5's maps are in civ5map format, and encodes terrain and
+    sometimes resources on the map plots. Scenario data is also encoded in some
+    civ5map files, although this does not currently parse such data.
+    
+    Civ5maps can be accompanied by lua files which defines advanced behavior for
+    world gen on top of what's already in the civ5map.
+    
+    There are three versions of the format identified in this file- A, B, and
+    C. The latest version of Civ can read all of them. Version A is the base
+    version. Version B has some additional information about the map in the
+    header (string3). Version C has an additional part in the header that
+    defines which lua files Civ should use when starting a new game with the map.
+    
+    .. seealso::
+       Source - https://forums.civfanatics.com/threads/civ5map-file-format.418566/
+    """
     def __init__(self, _io, _parent=None, _root=None):
         self._io = _io
         self._parent = _parent
@@ -68,13 +85,13 @@ class Civ5map(KaitaiStruct):
                 io = KaitaiStream(BytesIO(self._raw_lua_script))
                 self.lua_script = self._root.Header.NullTerminatedStr(io, self, self._root)
 
-            self.map_name = (self._io.read_bytes(self.map_name_len)).decode(u"utf-8")
-            self.map_description = (self._io.read_bytes(self.map_description_len)).decode(u"utf-8")
+            self.map_name = (self._io.read_bytes(self.map_name_len)).decode(u"UTF-8")
+            self.map_description = (self._io.read_bytes(self.map_description_len)).decode(u"UTF-8")
             if self.version >= 11:
                 self.string3_len = self._io.read_u4le()
 
             if self.version >= 11:
-                self.string3 = (self._io.read_bytes(self.string3_len)).decode(u"utf-8")
+                self.string3 = (self._io.read_bytes(self.string3_len)).decode(u"UTF-8")
 
 
         class NullTerminatedStr(KaitaiStruct):
@@ -88,7 +105,7 @@ class Civ5map(KaitaiStruct):
                 self.values = []
                 i = 0
                 while not self._io.is_eof():
-                    self.values.append((self._io.read_bytes_term(0, False, True, True)).decode(u"utf-8"))
+                    self.values.append((self._io.read_bytes_term(0, False, True, True)).decode(u"UTF-8"))
                     i += 1
 
 
@@ -122,6 +139,25 @@ class Civ5map(KaitaiStruct):
 
 
         class Plot(KaitaiStruct):
+            """whatever_type_id is an index into the corresponding list in 
+            the header. With the exception of terrain, it can be 0xFF,
+            which represents nonetype.
+            """
+
+            class Elevation(Enum):
+                none = 0
+                hill = 1
+                mountain = 2
+
+            class Continent(Enum):
+                none = 0
+                americas = 1
+                asia = 2
+                africa = 3
+                europe = 4
+
+            class River(Enum):
+                none = 0
             def __init__(self, _io, _parent=None, _root=None):
                 self._io = _io
                 self._parent = _parent
@@ -129,15 +165,11 @@ class Civ5map(KaitaiStruct):
                 self._read()
 
             def _read(self):
-                self.terrain_type_id = self._io.read_bytes(1)
-                self.resource_type_id = self._io.read_bytes(1)
-                self.feature1_type_id = self._io.read_bytes(1)
-                self.river = self._io.read_bytes(1)
-                self.elevation = self._io.read_bytes(1)
-                self.continent = self._io.read_bytes(1)
-                self.feature2_type_id = self._io.read_bytes(1)
-                self.unknown = self._io.read_bytes(1)
-
-
-
-
+                self.terrain_type_id = self._io.read_u1()
+                self.resource_type_id = self._io.read_u1()
+                self.feature1_type_id = self._io.read_u1()
+                self.river = self._root.Mapdata.Plot.River(self._io.read_u1())
+                self.elevation = self._root.Mapdata.Plot.Elevation(self._io.read_u1())
+                self.continent = self._root.Mapdata.Plot.Continent(self._io.read_u1())
+                self.feature2_type_id = self._io.read_u1()
+                self.unknown = self._io.read_u1()
