@@ -61,7 +61,7 @@ types:
       - id: resource_list_len
         type: u4
         
-      - id: unknown
+      - id: mod_data_len
         type: u4
         
       - id: map_name_len
@@ -82,19 +82,8 @@ types:
         type: null_terminated_str
         size: resource_list_len
         
-      - id: maybe_lua_params
-        doc: |
-          I don't know what's in here. It accompanies the lua stuff, so maybe
-          it defines options that passed into the lua file or something?
-        size: 36
-        if: version == 0xC
-      - id: lua_script_len
-        type: u4
-        if: version == 0xC
-      - id: lua_script
-        type: null_terminated_str
-        size: lua_script_len
-        if: version == 0xC
+      - id: mod_data
+        size: mod_data_len
         
       - id: map_name
         type: str

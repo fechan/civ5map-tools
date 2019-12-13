@@ -59,7 +59,7 @@ class Civ5map(KaitaiStruct):
             self.feature1_list_len = self._io.read_u4le()
             self.feature2_list_len = self._io.read_u4le()
             self.resource_list_len = self._io.read_u4le()
-            self.unknown = self._io.read_u4le()
+            self.mod_data_len = self._io.read_u4le()
             self.map_name_len = self._io.read_u4le()
             self.map_description_len = self._io.read_u4le()
             self._raw_terrain_list = self._io.read_bytes(self.terrain_list_len)
@@ -74,17 +74,7 @@ class Civ5map(KaitaiStruct):
             self._raw_resource_list = self._io.read_bytes(self.resource_list_len)
             io = KaitaiStream(BytesIO(self._raw_resource_list))
             self.resource_list = self._root.Header.NullTerminatedStr(io, self, self._root)
-            if self.version == 12:
-                self.maybe_lua_params = self._io.read_bytes(36)
-
-            if self.version == 12:
-                self.lua_script_len = self._io.read_u4le()
-
-            if self.version == 12:
-                self._raw_lua_script = self._io.read_bytes(self.lua_script_len)
-                io = KaitaiStream(BytesIO(self._raw_lua_script))
-                self.lua_script = self._root.Header.NullTerminatedStr(io, self, self._root)
-
+            self.mod_data = self._io.read_bytes(self.mod_data_len)
             self.map_name = (self._io.read_bytes(self.map_name_len)).decode(u"UTF-8")
             self.map_description = (self._io.read_bytes(self.map_description_len)).decode(u"UTF-8")
             if self.version >= 11:
@@ -155,9 +145,6 @@ class Civ5map(KaitaiStruct):
                 asia = 2
                 africa = 3
                 europe = 4
-
-            class River(Enum):
-                none = 0
             def __init__(self, _io, _parent=None, _root=None):
                 self._io = _io
                 self._parent = _parent
