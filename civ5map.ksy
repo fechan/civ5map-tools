@@ -134,9 +134,7 @@ types:
           - id: feature1_type_id
             type: u1
           - id: river
-            type: u1
-            doc: non-0 values may indicate a direction as well
-            type: u1
+            type: river
           - id: elevation
             type: u1
             enum: elevation
@@ -147,6 +145,17 @@ types:
             type: u1
           - id: unknown
             type: u1
+        types:
+          river:
+            seq:
+              - id: river_head
+                type: b5
+              - id: river_southwest
+                type: b1
+              - id: river_southeast
+                type: b1
+              - id: river_east
+                type: b1
         enums:
           elevation:
             0: none
