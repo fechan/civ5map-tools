@@ -151,7 +151,7 @@ types:
             type: u1
           - id: feature2_type_id
             type: u1
-          - id: unknown
+          - id: resource_amount
             type: u1
         types:
           river:

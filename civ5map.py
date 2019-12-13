@@ -164,7 +164,7 @@ class Civ5map(KaitaiStruct):
                 self.elevation = self._root.Mapdata.Plot.Elevation(self._io.read_u1())
                 self.continent = self._root.Mapdata.Plot.Continent(self._io.read_u1())
                 self.feature2_type_id = self._io.read_u1()
-                self.unknown = self._io.read_u1()
+                self.resource_amount = self._io.read_u1()
 
             class River(KaitaiStruct):
                 def __init__(self, _io, _parent=None, _root=None):
