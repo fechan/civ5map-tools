@@ -168,8 +168,12 @@ class Civ5map(KaitaiStruct):
                 self.terrain_type_id = self._io.read_u1()
                 self.resource_type_id = self._io.read_u1()
                 self.feature1_type_id = self._io.read_u1()
-                self.river = self._root.Mapdata.Plot.River(self._io.read_u1())
+                self.river = self._io.read_u1()
                 self.elevation = self._root.Mapdata.Plot.Elevation(self._io.read_u1())
                 self.continent = self._root.Mapdata.Plot.Continent(self._io.read_u1())
                 self.feature2_type_id = self._io.read_u1()
                 self.unknown = self._io.read_u1()
+
+
+
+
