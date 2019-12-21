@@ -168,13 +168,12 @@ class Civ5map(KaitaiStruct):
 
             class River(KaitaiStruct):
                 """Represents rivers defined by a tile's hex. Rivers are
-                defined by corners of hexes. In-game, Civ will
-                connect corners where the bit is 1 (true) with lines.
-                   _ 
-                  / \ East
-                  \_/
-                SW   SE
-                Because hexes tesselate, defining only SW-SE-E corners
+                defined by edges of hexes.
+                    /\
+                   |  | East
+                    \/
+                  SW  SE
+                Because hexes tesselate, defining only SW-SE-E edges
                 of the rivers can define rivers for all valid river spots.
                 """
                 def __init__(self, _io, _parent=None, _root=None):
@@ -185,9 +184,9 @@ class Civ5map(KaitaiStruct):
 
                 def _read(self):
                     self.unknown = self._io.read_bits_int(5)
-                    self.southwest_corner = self._io.read_bits_int(1) != 0
-                    self.southeast_corner = self._io.read_bits_int(1) != 0
-                    self.east_corner = self._io.read_bits_int(1) != 0
+                    self.southwest_edge = self._io.read_bits_int(1) != 0
+                    self.southeast_edge = self._io.read_bits_int(1) != 0
+                    self.east_edge = self._io.read_bits_int(1) != 0
 
 
 
