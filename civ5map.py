@@ -167,6 +167,16 @@ class Civ5map(KaitaiStruct):
                 self.resource_amount = self._io.read_u1()
 
             class River(KaitaiStruct):
+                """Represents rivers defined by a tile's hex. Rivers are
+                defined by corners of hexes. In-game, Civ will
+                connect corners where the bit is 1 (true) with lines.
+                   _ 
+                  / \ East
+                  \_/
+                SW   SE
+                Because hexes tesselate, defining only SW-SE-E corners
+                of the rivers can define rivers for all valid river spots.
+                """
                 def __init__(self, _io, _parent=None, _root=None):
                     self._io = _io
                     self._parent = _parent
@@ -174,10 +184,10 @@ class Civ5map(KaitaiStruct):
                     self._read()
 
                 def _read(self):
-                    self.river_head = self._io.read_bits_int(5)
-                    self.river_southwest = self._io.read_bits_int(1) != 0
-                    self.river_southeast = self._io.read_bits_int(1) != 0
-                    self.river_east = self._io.read_bits_int(1) != 0
+                    self.unknown = self._io.read_bits_int(5)
+                    self.southwest_corner = self._io.read_bits_int(1) != 0
+                    self.southeast_corner = self._io.read_bits_int(1) != 0
+                    self.east_corner = self._io.read_bits_int(1) != 0
 
 
 
